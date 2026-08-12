@@ -5,3 +5,9 @@ export async function getEvents() {
     const data = await response.json();
     return data;
 }
+
+export async function getEventById(id) {
+    const response = await fetch(`${BASE_URL}/events/${id}`);
+    const data = await response.json();
+    return data;
+}
