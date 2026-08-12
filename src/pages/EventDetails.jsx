@@ -25,6 +25,10 @@ export default function EventDetails() {
     day: "numeric",
   });
 
+  const offset = 0.01;
+  const bbox = `${event.longitude - offset},${event.latitude - offset},${event.longitude + offset},${event.latitude + offset}`;
+  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${event.latitude},${event.longitude}`;
+
   return (
     <div className="max-w-3xl mx-auto p-4">
         <Link to="/" className="btn btn-ghost btn-sm mb-4"> 
@@ -45,6 +49,11 @@ export default function EventDetails() {
         </div>
         
         <p>{event.description}</p>
+
+        <div className="w-1/2 aspect-square mt-4 mx-auto">
+            <iframe title="Event Location Map" className="w-full h-full rounded-lg border" src={mapUrl}></iframe>
+
+        </div>
     </div>
     </div>
     </div>
