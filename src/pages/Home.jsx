@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
 import { getEvents } from "../utils/api";
+import { useNavigate, useSearchParams } from "react-router";
 
 export default function Home() {
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") || "";
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchEvents() {
@@ -24,18 +28,23 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  const filteredEvents = events.filter(
+    (event) =>
+      event.title.toLowerCase().includes(search.toLowerCase()) ||
+      event.location.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-1">Upcoming Events</h1>
       <p className="text-base-content/70 mb-4">
         Discover and join amazing events happening around you.
       </p>
-
       {loading ? (
         <p>Loading events...</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {events.map((event) => (
+          {filteredEvents.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
         </div>
