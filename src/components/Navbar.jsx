@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate, useSearchParams } from "react-router";
 import { Calendar, Search, Menu, X } from "lucide-react";
-import { getToken, removeToken, getEmail, getDisplayName } from "../utils/storage";
+import {
+  getToken,
+  removeToken,
+  getEmail,
+  getDisplayName,
+} from "../utils/storage";
 
 const linkClasses = ({ isActive }) =>
   `text-sm font-medium transition-colors ${
@@ -10,6 +15,8 @@ const linkClasses = ({ isActive }) =>
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+  const searchTerm = searchParams.get("search") || "";
   const navigate = useNavigate();
   const token = getToken();
   const displayName = token ? getDisplayName(getEmail()) : "";
@@ -42,14 +49,28 @@ export default function Navbar() {
         </nav>
 
         {/* Search - desktop only */}
-        <label className="hidden max-w-xs flex-1 items-center gap-2 rounded-full border border-base-200 bg-base-200/50 px-3 py-1.5 md:flex">
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="hidden max-w-xs flex-1 items-center gap-2 rounded-full border border-base-200 bg-base-200/50 px-3 py-1.5 md:flex"
+        >
           <Search size={16} className="text-base-content/40" />
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => navigate(`/?search=${e.target.value}`)}
             placeholder="Search events..."
             className="w-full bg-transparent text-sm outline-none placeholder:text-base-content/40"
           />
-        </label>
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="text-base-content/40 hover:text-base-content"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </form>
 
         {/* Auth actions - desktop */}
         <div className="hidden items-center gap-2 md:flex">
@@ -67,10 +88,16 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <NavLink to="/signin" className="btn btn-outline btn-primary btn-sm rounded-full">
+              <NavLink
+                to="/signin"
+                className="btn btn-outline btn-primary btn-sm rounded-full"
+              >
                 Sign In
               </NavLink>
-              <NavLink to="/signup" className="btn btn-primary btn-sm rounded-full">
+              <NavLink
+                to="/signup"
+                className="btn btn-primary btn-sm rounded-full"
+              >
                 Sign Up
               </NavLink>
             </>
@@ -120,10 +147,18 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <NavLink to="/signin" className="btn btn-outline btn-primary btn-sm flex-1 rounded-full" onClick={() => setMenuOpen(false)}>
+                <NavLink
+                  to="/signin"
+                  className="btn btn-outline btn-primary btn-sm flex-1 rounded-full"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Sign In
                 </NavLink>
-                <NavLink to="/signup" className="btn btn-primary btn-sm flex-1 rounded-full" onClick={() => setMenuOpen(false)}>
+                <NavLink
+                  to="/signup"
+                  className="btn btn-primary btn-sm flex-1 rounded-full"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Sign Up
                 </NavLink>
               </>
