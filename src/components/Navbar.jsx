@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { NavLink } from "react-router";
-
-//this is for the icons from the template
+import { NavLink, useNavigate } from "react-router";
 import { Calendar, Search, Menu, X } from "lucide-react";
+import { getToken, removeToken, getEmail, getDisplayName } from "../utils/storage";
 
 const linkClasses = ({ isActive }) =>
   `text-sm font-medium transition-colors ${
@@ -11,7 +10,15 @@ const linkClasses = ({ isActive }) =>
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const token = getToken();
+  const displayName = token ? getDisplayName(getEmail()) : "";
+
+  function handleSignOut() {
+    removeToken();
+    setMenuOpen(false);
+    navigate("/");
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-base-200 bg-base-100">
@@ -47,7 +54,17 @@ export default function Navbar() {
         {/* Auth actions - desktop */}
         <div className="hidden items-center gap-2 md:flex">
           {token ? (
-            <button className="btn btn-ghost btn-sm rounded-full">Sign out</button>
+            <>
+              <span className="text-sm text-base-content/70 hidden lg:inline">
+                Hi, {displayName}
+              </span>
+              <button
+                className="btn btn-ghost btn-sm rounded-full"
+                onClick={handleSignOut}
+              >
+                Sign out
+              </button>
+            </>
           ) : (
             <>
               <NavLink to="/signin" className="btn btn-outline btn-primary btn-sm rounded-full">
@@ -90,7 +107,17 @@ export default function Navbar() {
           </NavLink>
           <div className="mt-2 flex gap-2 px-3">
             {token ? (
-              <button className="btn btn-ghost btn-sm flex-1 rounded-full">Sign out</button>
+              <>
+                <span className="text-sm text-base-content/70 px-1">
+                  Hi, {displayName}
+                </span>
+                <button
+                  className="btn btn-ghost btn-sm flex-1 rounded-full"
+                  onClick={handleSignOut}
+                >
+                  Sign out
+                </button>
+              </>
             ) : (
               <>
                 <NavLink to="/signin" className="btn btn-outline btn-primary btn-sm flex-1 rounded-full" onClick={() => setMenuOpen(false)}>
